@@ -1,0 +1,1 @@
+This will be the directory that will store my MSci Project "Time for Typestates". It will contain my paper summaries, meeting notes, code, and theory notes. 
