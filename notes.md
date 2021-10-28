@@ -166,3 +166,63 @@ Had a look at subtyping for declared <: declared, fairly straightforward in most
 Inferred subtyping has been well defined. Declared <: declared subtyping was slightly harder and proved to have some issues in it as mentioned above. Join for declared has been declared typestates with no major issues. Join for inferred types is slightly harder when it comes to joining SI with (v,SI) and another one as if the times are different it should return a set but this isn't defined for x: [(v,SI), (v',SI')] as say two different paths after a switch with different delay values. It makes sense that these should be a set tho, so will likely just update the grammar to allow c[SI, SI',..] etc but this may have more issues. 
 
 For the start of the day tomorrow, have another look at how to fix join, if not too easy then best working on the next parts of the paper. 
+
+**Week 6** 
+
+First thing to do is update the existing notes so that an inferred type can have a set of Inferred subtypes which can show branches of actions with different timings. Rules will need to be updated for the subtyping to also reflect this. As well as the Join. 
+
+Maybe ask for helping looking at how the enum attaches labels to the branches it could go down with the join. From the inference rules it is clear it doesn't attach labels to the typestate that a Enum method would progress to. This is because it uses joins.
+
+Also maybe ask for help where the Fig 7 rules are used, I understand them but struggle to see when they would be used. 
+
+In the Timed literature, they check the typing by adding the clocks to the local session type such as (v,S). Currently my implementation keeps the clocks on the inferred side of the subtyping rules when comparing if an inferred is a subtype of a declared. I don't think it makes much of a different but I could add simplification to the inferred type as it would only need to worry about integer timing values when inferring and then when subtyping it would add these values to the clocks held in S when moving to the right. Currently, the delay action would need to infer a global clock which could lead to a more complicated implementation of the inference system in Mungo.
+
+Time was spent on Monday quickly editing the current typing system to match this simplification. Following the new refined version of the subtyping system, the join system is easier to define, based just on the value of t in (t,I).
+
+Can now look at how the typestate inference rules would change. Delay rule is the first main one. All inference rules would need to translate S to I, but other than that and the change of rule New. Delay is the onl major update to the inference rules. 
+
+When starting the subtyping of a class (in the New rule) we can add (v, S) or leave it as just S if we want to keep time constraints optional. The existing subtyping rules would need to be edited to allow this but it shouldn't be too much of an issue.
+
+Inference rules were updated including the class ones. Good work today, even if a little sideways. Tomorrow should finish up the rules and then work on making some examples.
+
+For the reduction relation rules (Fig 9) a new delay rules will need to be added to allow the typing context to reduce when presented with (t, I). I think that the delay rule should "sync" all the inferred typestates such that you only need to perform delay once. E.g. if we had x : Stack[pop : push : (5, pop)] such that the final pop is performed after a delay of 5, and we had y : Stack[(5, pop)] then if both of these paths are in the typing context we should first have to pop, push on x before we delay by 5 which will reduce y and x. If we could just use delay for any typestate then we would have to continuously reduce by using a delay each time (t, I) came up which doesn't match the expression labels we would go through. 
+
+Above may not be required, so from the Type preservation property, a label reduction only looks like it will apply to PHI if we move from h,e using that label, therefore we only move that way using a delay once which will update all typestates that will have had that delay which is every typestate not an end, I think.
+
+The delay rule does not add time to C[end], this is because this class has not be created at this stage so it wouldn't make sense that it would have the notion of time as the time constraints of a class are relative to it's creation. 
+
+Fgi 7 contains typestate inference rules for class definitions, I originally updated these to be typed against the inferred type but it is more likely that it is checking the declared typestate makes sense. These will need to be looked at again in more detail drawing on properties found in the literature. Mungo does not provide proofs for this section, so I may not need to either however it is still a good idea to update it for the new version of S. 
+
+**Point to raise**
+Currently when checking subtype of I <: (v, S) it can also just check i <: S if S contains no clocks so therefore isn't timed. Currently multiple rules have been put in place to allow this optional change but it may be simpler to just type against (v,S) always even if it doesn't contain any notion of clock constraints.
+
+**Inventory of Theory**
+A short list to take stock of the theory that has been written in my notes and what else needs to be updated 
+
+* Top level syntax updated +
+* Runtime syntax updated +
+* Labelled reduction semantics - (don't think they need updated)
+* Init for clocks updated +
+* Operational semantics updated +
+* Syntax for types updated +
+    * May need to add C[(v,S)] as well
+* Subtyping relations
+    * Inferred <: declared +
+        * When declared has time +
+        * When declared does not have v - 
+    * Inferred <: inferred +
+    * declared <: declared - (Likely not needed)
+* Join for inferred +
+* Typestate transitions for Inferred and Declared +
+* Inference rules for expressions +
+* Inference rules for methods, fields etc - (Need to look at how to do this)
+* Inference rules for runtime +
+* Reduction relation on typing contexts +
+
+Need to have a think about how the theory works when a user makes a delay in the method of a class. It should be okay but should run through some examples. 
+
+When is the Class subtyping rule used? It is likely I only need it for inferred <: inferred but not for the inf <: declared. 
+
+Good work today, adding types to Latex too much longer than expected but it needed done, should hopefully finish it tomorrow and then write up another example. 
+
+Should write up the free clocks function so I don't abuse notion in the clocks function. 

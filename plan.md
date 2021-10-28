@@ -15,6 +15,7 @@
 * Week 5 (18/10)
     * Try to add the type inference rules for time constraints, decide on which way to subtype. 
 * Week 6 (25/10)
+    * Add more examples and write down the rules more explicitly. Start of the week should clean up the inference rules and make sure they are updated for the Inferred subtypes.   
 * Week 7 (1/11)
 * Week 8 (8/11)
 * Week 9 (15/11)
