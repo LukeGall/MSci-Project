@@ -17,6 +17,7 @@
 * Week 6 (25/10)
     * Add more examples and write down the rules more explicitly. Start of the week should clean up the inference rules and make sure they are updated for the Inferred subtypes.   
 * Week 7 (1/11)
+    * Work on finishing up and cleaning up the theory, should almost be ready to start writing up the proofs soon
 * Week 8 (8/11)
 * Week 9 (15/11)
     * Start report (Maybe)

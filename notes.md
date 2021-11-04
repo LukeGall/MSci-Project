@@ -200,7 +200,7 @@ Currently when checking subtype of I <: (v, S) it can also just check i <: S if 
 A short list to take stock of the theory that has been written in my notes and what else needs to be updated 
 
 * Top level syntax updated +
-* Runtime syntax updated +
+* Runtime syntax updated ++
 * Labelled reduction semantics - (don't think they need updated)
 * Init for clocks updated +
 * Operational semantics updated +
@@ -223,6 +223,88 @@ Need to have a think about how the theory works when a user makes a delay in the
 
 When is the Class subtyping rule used? It is likely I only need it for inferred <: inferred but not for the inf <: declared. 
 
-Good work today, adding types to Latex too much longer than expected but it needed done, should hopefully finish it tomorrow and then write up another example. 
-
 Should write up the free clocks function so I don't abuse notion in the clocks function. 
+
+Runtime syntax is updated with the inferred type as this is used for the runtime typing later on. 
+
+
+LaTeX file stuff to continue with
+* Make macro for optional stuff +
+* T's can just match in one of the subtyping rules +
+* Clean up positions of the figures in the file
+* Rename X in the top level syntax +
+* Clean up clocks definition +
+* Split apart on of the inferred rules +
+* Typestate transitions for inferred and Declared 
+* Typestate inference for the Methods + 
+* Inference rules for runtime +
+* Reduction relation on typing contexts
+* Clean up
+* Another read through 
+
+
+**Week 7**
+This week, time should be spent cleaning up the LaTeX file, working on how the inference system will work for classes and methods, and then write up some examples and work through them. 
+
+*Inference for classes*
+Having a closer look at the rules for figure 7, they more seem like they are focused on if the declared typestate is consistent, in this regard they more focus on if the typestate definitions match the inference of the expressions. So figure 7 will likely change as a minimum to use I and S when appropriate, this will require subtyping of S <: I, such that the i = S can hold correctly. This would certainty work as a baseline for checking if the typestate as consistent, however it is unclear how well this will work with more confusing examples. However it doesn't seem like a huge part of the paper so it may be sufficient. 
+
+If I was to try and add more checks to the declared typestate, there seems to be two main approaches. 
+1. Following the Scribble paper, it is important that the typestate is infinitely satisfiable, we can then check for feasibility using an alg. (Likely best option)
+2. The Asynch paper uses the notion of past to stop junk types during an typing example. This may also be a solution. 
+
+For the first part of the day, it was spent understanding the problem and potential solutions. The next part should be to update the subtyping rules, and explore method 1 first. 
+
+For my understanding so far, the reason the method-st holds is because it takes a full typestate declaration as input to the method expression and basically wants it to not majorly change it when the expression is finished. Therefore the inferred type would still have all the method declarations from the input S, when it came out the other end as S'. I was originally confused how it would infer all the correct paths for a typestate without realising that because it takes as input the declared definition it just needs to not modify it a huge amount. 
+
+Possible Solutions to the method inference 
+* At the start of a call method we convert C[S] into C[I], this allows the existing rules to apply when working out the typing inference for the expression, so we get C[I'] out the other side. We can then use I' = S and it should hold with the current rules allowing declared <: inferred. 
+* We use the existing system and rules and then have time checking another way (Not ideal). 
+
+The current system were declared is subtyped against inferred isn't perfect, more work needs done to figure out when it makes sense.
+
+Also need to have another look at how the join system works, still confused how enum labels are computed. Have a look at the inferred type example and then try to subtype it.
+
+The current subtyping rule for the branches is likley not correct but it is difficult to know when this rule would be used as it isn't clear how enum values even subtype. Can leave this part for now and talk to Ornela for more info.
+
+*Tuesday* 
+Focus more on getting some examples written down and then write up the logic I did yesterday, need more help with it so try and not spend all day just banging your head against it. Focus on getting the current rules up on the LaTeX and then get some examples down, this will help figure out if there is any holes that needs filling. 
+
+An example needs worked through, but I'm not sure how delays will work within a call as it would likely change the typestate of a 'this'. Could maybe look to change the delay rule such that "this" doesn't get updated? Not sure how that would work. 
+
+Even a simple example feels quite confusing, not sure how enum correctly get subtyped. As the inference rules for the expressions don't attach labels so I'm not sure how the subtyping works :(.
+
+Things to try and figure out
+* How does the enum subtyping work, with my current example using a switch it needs to match against an enum method but I'm not sure how the join of the switch branches allows a subtyping with the enum method 
+* How would a delay in a method call affect the "this" typestate, would this stop the call premise from holding? - yes
+
+After lunch, do a much smaller example of inference, mainly the delay one, possibly a switch. 
+
+Can do a couple of small subtyping examples but not a huge amount, inference is more important. Current example is quite large but useful. 
+
+Main points that have come up during the week so far 
+* Inference for methods is possible if a tad clunky, not sure how the checking works and why it needs to be there. Can likely add alg to do the time checking for inf sat and feasibility. 
+* Big example made for inference which should be correct with a bit more clean up.
+* Subtyping of enums is not too clear but will work on looking at how it works. 
+
+
+A slightly slower and more frustrating day but still good work done, tomorrow should be spent writing up rules and thinking about which way to go for the Method-st rule based on how delays in methods should work. 
+
+
+*Wednesday*
+Two main ways to progress with the Call and Method-St parts
+* Part one based on keeping the abstraction principle (whatever this is) alive which does not allow delays 
+* Part two allows delays but only delays to occur between I' and I. 
+* Have a look at the branches rule
+    * The branches rule would only work for a switch were each part has a different timing. The grammar has been updated to allow a set of {N, (t,I)}. The join rule was updated for this plus the changing of the S-Set subtyping rule. 
+* I don't think the S-Enum rule is required, likely only needed for I <: I
+
+Part one is the easiest route and would require the least amount of new work. 
+
+Part two is probably the most handy. Work will be done on both. Part 2 seems easy to implement and will be both will be written up in the LaTeX.
+
+Good work today, got most of the updated theory down and fixed a few issues with the grammar and how the joins would work with the switches etc. Updated a lot of stuff in the LaTeX file as well.
+
+*Thursday* 
+When subtyping something with no time, it may be easier to just have an empty set of clocks. *Point to bring up* 
+
