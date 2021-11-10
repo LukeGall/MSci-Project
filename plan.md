@@ -19,6 +19,7 @@
 * Week 7 (1/11)
     * Work on finishing up and cleaning up the theory, should almost be ready to start writing up the proofs soon
 * Week 8 (8/11)
+    * Finish up main part of the theory, clean up the LaTeX file with the figures then send it over. Maybe look at how the proofs will go, or get some ideas down for which examples I'll use to showcase the theory.
 * Week 9 (15/11)
     * Start report (Maybe)
 * Week 10 (22/11)

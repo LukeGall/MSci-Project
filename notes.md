@@ -196,29 +196,6 @@ Fgi 7 contains typestate inference rules for class definitions, I originally upd
 **Point to raise**
 Currently when checking subtype of I <: (v, S) it can also just check i <: S if S contains no clocks so therefore isn't timed. Currently multiple rules have been put in place to allow this optional change but it may be simpler to just type against (v,S) always even if it doesn't contain any notion of clock constraints.
 
-**Inventory of Theory**
-A short list to take stock of the theory that has been written in my notes and what else needs to be updated 
-
-* Top level syntax updated +
-* Runtime syntax updated ++
-* Labelled reduction semantics - (don't think they need updated)
-* Init for clocks updated +
-* Operational semantics updated +
-* Syntax for types updated +
-    * May need to add C[(v,S)] as well
-* Subtyping relations
-    * Inferred <: declared +
-        * When declared has time +
-        * When declared does not have v - 
-    * Inferred <: inferred +
-    * declared <: declared - (Likely not needed)
-* Join for inferred +
-* Typestate transitions for Inferred and Declared +
-* Inference rules for expressions +
-* Inference rules for methods, fields etc - (Need to look at how to do this)
-* Inference rules for runtime +
-* Reduction relation on typing contexts +
-
 Need to have a think about how the theory works when a user makes a delay in the method of a class. It should be okay but should run through some examples. 
 
 When is the Class subtyping rule used? It is likely I only need it for inferred <: inferred but not for the inf <: declared. 
@@ -235,10 +212,10 @@ LaTeX file stuff to continue with
 * Rename X in the top level syntax +
 * Clean up clocks definition +
 * Split apart on of the inferred rules +
-* Typestate transitions for inferred and Declared 
+* Typestate transitions for inferred and Declared +
 * Typestate inference for the Methods + 
 * Inference rules for runtime +
-* Reduction relation on typing contexts
+* Reduction relation on typing contexts +
 * Clean up
 * Another read through 
 
@@ -307,4 +284,45 @@ Good work today, got most of the updated theory down and fixed a few issues with
 
 *Thursday* 
 When subtyping something with no time, it may be easier to just have an empty set of clocks. *Point to bring up* 
+
+Have another wee look at how the reductions work on typing contexts, think it's all good but take another look at the delay rule. Happy with it.
+
+
+**Week 8**
+*Inventory of Theory*
+A short list to take stock of the theory that has been written in my notes and what else needs to be updated 
+
+* Top level syntax updated +
+* Runtime syntax updated ++
+* Labelled reduction semantics - (don't think they need updated)
+* Init for clocks updated +
+* Operational semantics updated +
+* Syntax for types updated +
+    * May need to add C[(v,S)] as well
+* Subtyping relations
+    * Inferred <: declared +
+        * When declared has time +
+        * When declared does not have v - 
+    * Inferred <: inferred +
+    * declared <: declared - (Likely not needed)
+* Join for inferred +
+* Typestate transitions for Inferred and Declared +
+* Inference rules for expressions +
+* Inference rules for methods, fields etc +
+* Inference rules for runtime +
+* Reduction relation on typing contexts +
+
+Got some good work done in the morning, had a look at and starting writing up the definitions for inf sat and feasibility. This is a fairly large section which can be included or not with definitions adapted from the Timed MPST paper, but it feels feasible to add some algs to check that the local typestates created created by users are feasible. The afternoon will be spent cleaning up the LaTeX to get it sent off.
+
+More work was done in the LaTeX file to explain some of the logic to make it more readable. Great work today, will continue LaTeX file tomorrow, try and send it off then work on the examples afterwards.
+
+*Tuesday*
+LaTeX file was cleaned up in the morning, all the definitions have been written up and it looks pretty good.
+
+More work will be done on some examples as well as seeing if more updates need to be done on the feasibility stuff. Some more work was done on how to do the inf. sat. and feasibility checker but easier to do once I start working on Mungo itself. Inf. Sat. definition could definitely be included in the theory but the feasibility checker it is a bit longer winded but would continue to follow the ideas from the MPST paper as this is what the scribble paper is based on. 
+
+Not any major progress with more examples, need to have a better think of what example we would want to use for Scribble, Mungo inference, and then subtyping. A combination of examples of a local type that connects to other classes may be helpful, otherwise we can just focus on typestates for single classes.
+
+*Wednesday* 
+Write up some meeting notes and have the meeting plus the reading club thing. Focus on getting some good examples down on paper, looking at the examples used in other papers. Then focus on maybe writing an alg down to do the inf. sat check as this can certainty be written up for the report due this december.
 
