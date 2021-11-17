@@ -326,3 +326,29 @@ Not any major progress with more examples, need to have a better think of what e
 *Wednesday* 
 Write up some meeting notes and have the meeting plus the reading club thing. Focus on getting some good examples down on paper, looking at the examples used in other papers. Then focus on maybe writing an alg down to do the inf. sat check as this can certainty be written up for the report due this december.
 
+My rdy function looks like it is slightly off. We want it that for a set of methods H we can progress time as long as one of the H is possible to progress. If H is an enum type then, all time constraints of the labels must be valid. We can't progress such that one of the constraints of kl is invalid as we don't know which one we would get in.
+
+Good work today, got more written up in the LaTeX doc that I should be able to send off tomorrow and then I can start the Lit Review.
+
+*Thursday* 
+Final changes to initial definitions doc sent off. 
+
+# Lit Review 
+
+Taking advice from Ornela, i'm going to try and split the lit review to follow a kind of 'Related Work' section that you would find in research paper. To this end the review should be split into the main sections of research that covers the project. This includes the sections of 
+
+* Session types (primarily multiparty session types)
+* Typestates 
+* Time
+    * Including time in a multiparty envo but focusing first on CTAs and timed automata
+* Scribble monitoring 
+
+*Session Type section* 
+
+Refs taken from Papaya 
+16,17,18,10,35,14
+
+Refs taken from Mungo 
+28,15,14,17,38,26,9
+
+The session type section of the lit review will focus on covering what a session type is with points to the relevant literature and focusing on how session types can be used and the use they have in context. 
