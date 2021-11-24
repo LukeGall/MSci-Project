@@ -23,6 +23,7 @@
 * Week 9 (15/11)
     * Clean up the LaTeX file and continue with the lit review
 * Week 10 (22/11)
+    * Continue Lit Review, time section complete with start on typestate
 * Week 11 (29/11)
 * Week 12 (6/11)
 * Week 13 (13/11) [Intern Report Due 17th]

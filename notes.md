@@ -341,7 +341,6 @@ Taking advice from Ornela, i'm going to try and split the lit review to follow a
 * Typestates 
 * Time
     * Including time in a multiparty envo but focusing first on CTAs and timed automata
-* Scribble monitoring 
 
 *Session Type section* 
 
@@ -352,3 +351,6 @@ Refs taken from Mungo
 28,15,14,17,38,26,9
 
 The session type section of the lit review will focus on covering what a session type is with points to the relevant literature and focusing on how session types can be used and the use they have in context. 
+
+*Time Section*
+Papers have been gathered for the time section. This section will first introduce the notion of time from Timed automata then discuss some of the research areas that have used time, mainly communicating timed automata, a few other areas where monitoring is useful and how it could have provided a base to use and then the mulitparty stuff with scribble 
