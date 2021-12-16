@@ -354,3 +354,236 @@ The session type section of the lit review will focus on covering what a session
 
 *Time Section*
 Papers have been gathered for the time section. This section will first introduce the notion of time from Timed automata then discuss some of the research areas that have used time, mainly communicating timed automata, a few other areas where monitoring is useful and how it could have provided a base to use and then the mulitparty stuff with scribble 
+
+*Typestates section*
+
+Refs from papaya
+32 - original one - yes
+3 - Mungo one - maybe
+13 - covered already
+21 - Mungo paper I use
+24 - Yes
+25 - maybe
+1 - yes
+33 - maybe
+8 - yes
+9 - maybe
+5 - yes
+28 - yes
+
+Just write up the paragraphs and then move them around afterwards.
+
+*Notes for reading club* 
+Focus on points from the multiparty session types first. Going over how they add time and stuff like that. The general bullet points below can be the rough slides that will be covered and then can have some speaker notes so I don't forget what I'm talking about 
+
+Timed Multiparty session types 
+* This paper follows research from multiparty session types which describe communication protocols among two or more participants from a global viewpoint. 
+* They design MPSTs with clocks, clock constraints, and resets. 
+* Show off the example they have with the ocean one and example how it works 
+    * But not too much as not the important thing to touch on
+* Give the definitions of clocks etc and time, including clock assignments etc. Go over the clock constraints too. 
+* The syntax for the timed global types can then also be given
+    Focusing on showing that actions are annotated with these time actions
+* Clocks are unique for the participants 
+* As we have local types make sure to touch on the fact that local types are projected onto them. Can give an example of the session type projection with the keys of the time constraints. 
+* Can then briefly touch on the semantics and show the labelled transitions. Focusing on what 'rdy', ensures that ready actions aren't made unsatisfiable.  
+* They then show an update of session processes with delays, won't cover too much about this as this paper is more the preamble to the main paper but I will show the syntax which is fairly understandably for the get go.
+    * Can likely touch on what the delay primitive is however
+* Can touch lightly on that they go on to show time error freedom
+By discussing feasibility and wait-freedom, (also maybe inf sat too)
+
+Timed runtime monitoring for multiparty conversations (updates scribble)
+* Start again by showing the example they use, better notation this time. 
+* Go through the steps the paper presents to use their tool 
+* Show the syntax of timed global scribble protocols. 
+* Show give an example of a larger protocol to make sure it is understandable 
+* The formal semantics of the scribble stuff is adapted from the previous theory 
+    * Can discuss a few steps however, i.e. how they make sure it is async
+    * Might want to discuss how multiple actions may be able to fire in this paper which is why rdy is needed 
+    * Rdy for choice actions only needs one to be available (like my rdy)
+    * Continue the slight discussion of the protocols and wait it requires
+    * Prevents violations from the protocols itself 
+* Can then touch on the local protocols and show how they aren't too complicated and follow the global ones quite nicely 
+* Don't think I'll touch on the merge stuff
+* Projectable stuff takes a couple of page so may be an important one to touch apon just to show that a good amount of theory has been thought of
+* Formal semantics of local types are again v similar to global types so not much needs to be covered of it
+* Configurations are given which is just the joining of multiple local protocols and the async message queues
+* Touch lightly on correspondence 
+* Provide an alg to check wait-freedom and feasibility
+    * Include inf sat
+    * Includes virtual time checks and stuff
+* The implementation of the stuff in python 
+* Including showing off some of the code and stuff like that 
+* Runtime verification stuff
+* beanchmarks results 
+* Temporal patterns is a cool section
+
+
+
+
+
+
+*Have a look at rdy* 
+Can have another look but if I understand it correctly, mine still works as it says that the ready actions are just the branches that typestate could check so it would need to satisfy one of them or like a whole enum one. Can have a look at it on Monday, I don't need to worry about it on Sunday. 
+
+My ready function does work as expected. An interesting point of note is that the implementation in Timed MPST is that any of the constraints on a receive branch can be valid. This is unlikely to make sense for our implementation where we require all branches of a enum to be valid. 
+
+Subtyping rules were incomplete for the enum case, this has now been added. The current system uses joins to make the inference system easier to understand. I think my rule would be okay to capture the requirements but can look at some more complicated examples in the afternoon to check this
+
+Also need to try and change the notion for the constraints
+
+Updated some of the project definition stuff
+
+
+*To do - Examples*
+* Write up the last of the protocols for the Scribble example
+* Write out updated stack user / accumulator example
+* Write out derivations, checking that my rules work as expected
+* Write these rules up in LaTeX - after proofs
+
+SMTP commands that involve time
+* An SMTP client must provide a timeout mechanism, must use per-command timeouts
+* Initial 220 Message - 5 mins
+    * Client should wait 5 mins before it decides if it would get a failed TCP connection. 
+* MAIL Command - 5 mins
+    * Sends a mail request to the server, server replies with response. 
+* RCPT Command - 5 mins
+    * Server replies with an 250 OK or 550 reply
+* DATA Initiation - 2 mins
+    * Server returns a 354 intermediate reply
+* Data block - 3 mins
+    * Awaiting the completion of each TCP send call transmitting a chunk of data
+* DATA Termination - 10 mins
+    * Final period terminating the message data
+* Server Timeout - 5 mins
+    * SMTP server SHOULD have a timeout of at least 5 mins while it is awaiting the next command from the sender
+* sender must delay retrying a particular destination after one attempt has failed. The retry interval should be at least 30 mins
+
+
+Aside, the VBra rule in Timed Multiparty Session Types, states that a branch for the sessions, the time must be valid under every receive option. Similar to my Enum methods.
+
+As all branches need to be valid for an Enum method for Mungo and compared with the VBra rule. It makes sense that we change it to a single time constraints. This would act as the "meet" of the constraints that we could have in each branch as we would need all these constraints to be valid in this translation as we not "receiving" a message per say but calling an Enum method so it doesn't make sense to have a time constraint on the branch label which we can't know ahead of time. This is good reasoning however, the time constraints, while forming a meet, have unique reset constraints based on the branch that has been taken as drawn up by one of the examples so it is important that the constraints are present on each branch. This will still need to meet of the time constraints but allows resets on each branch which is required (this follows time and Mungo). One issue with this is if Join makes sense in the typing context. As if we join branches at the top which look similar for the first few contexts we may miss a reset which is needed for one branch. For this case, join will be simplified but this may affect the proofs further down the line so more info will be required about what Join does and why it is needed. 
+
+Need to have another look but if we are assuming wait-freedom, (which we are) then the timeout reply means we have a timout to check if the message is there but there would be some time constraints on the server side to make sure it has sent ok. There is an example of a timeout in the Timed Runtime Paper which has the timeout on the client side, which I would need to do to, just not too easy to figure out how this would work or not. As it's the wrong kind of constraint, a timeout means the Client is waiting 5 mins to get a response, but this isn't wait-free. 
+
+It is important to note that this system needs to be synchronous and therefore wait-free as a result, as if client calls a message to get the method then it syncs with the class it is connecting to (i think).
+
+As methods are synchronous in design the idea of a timeout doesn't naturally correspond to the design we have of Mungo, I don't think. 
+
+As this system will be synchronous we can't really represent timeout in the same sense as the SMTP client. But we can still put the timeout on the client side such that it reads and checks the message sent by the server. We also assume messages are wait-free as that is the protocol constraints we are expecting from T-MPST so timeout in terms of waiting for the message doesn't make sense for this either. So it would work but more put a constraint on the user calling the check to see what the message is. This check would be a choice but both messages would need the same timeout as we are just checking for a response. 
+
+Good idea to discuss this at the next meeting (which will be in Jan) but no major issues with changing the system to simplify the enum method call due to the existing Mungo system. However the notion of a timeout in SMTP won't be directly captured by this timing system, however the benefits of the timed system as still present. 
+
+One slightly odd way to do it, would be to have the message polling method (receive_fromServer) be a choice of available or not and then this could only be called up until the timeout, again this isn't perfect but would work as a possible hack. I think the issue with timeout is more around the fact we are dealing with method calls in a synchronous setting, can't really get away from it. 
+
+Simplification of typing constraints on ENUM will not occur and the join will be simplified to ensure correct typing of possible resets depending on the response from a message etc. Labels are not needed to be added, as far as I'm aware as the subtyping relationship will find the correct paths for them to take (I think). So only change is to make join more simple and not to join similar typestates at any stage based on method calls. This might cause issues as we could have a separate class that has the same typestate and is unchanged in the input for join and is then duplicated for the join. Or not depending on the way sets work. If we assume that sets work as expected then it should be okay as we won't end up dealing with duplicates however this isn't ideal.
+
+So two possible paths 
+1. Can go for the simplification that Ornela discussed as we may not need to bother with specific resets for branches but this is quite a large simplification and not brilliant as we may lose some expressivity that is present in the descriptions of the time stuff. 
+    So the question is, do we need separate branch conditions for a external choice? Yes I'm fairly sure we do, it would be important to have on an enum the ability to switch to either end or recurse back to the start. 
+2. Join is "simplified" such that we keep the current typestate definitions but join doesn't join all the method branches as we would need them to be individual for the reset of each branch. This could maybe work if we changed the definition to only join the entire typestate definition instead of having it such that parts are joined i.e. (push:pop) and (push:push) are just union-ed instead of being (push: (push,pop)). 
+
+Neither of these paths are entirely clear and may cause some difficulties. May be best asking Ornela? 
+
+Current path changes the join to just a union unless the typestates are identical (i.e. unchanged) in which case they are simplified to ensure we don't have duplicates. Maybe try to call Ornela tomorrow. Good work today, shame it was another slight hiccup with the theory. 
+
+So to double check the theory I've done and make sure it makes sense to change the join can just double check exactly what Join does and if it'll be okay to make the slight simplification.
+
+The main thing Join is doing is joining the inferred typestates that have been found for the different classes. Including the set of method calls that a typestate may send to. It computes an upper bound with respect to sbt. It makes a common typestate for multiple execution paths. 
+
+It is used in Switch and If, to compute the common typestate of the different branches. For switch (the main one we care about) it then attaches this joined typestate to the method call (ENUM) so it has multiple branches it then goes down. This can also change all class types. So even if we are joining the type for say 'X' it would also change 'this' if we added time for example which would mean we had a different branch if the other branch didn't have this time change. Need to be careful that we add new branches as a union of typestates but make sure identical typestates don't get unioned. We just don't want to join on the continuation typestates as we need this for resets and constraints on enum branches. Happy with new definition of join, continue with examples and then go through every subtyping rule and think when it would occur.
+
+Join won't need the optional time constraints as we only join inferred types
+
+Main examples written up. Subtyping example can follow from the inference stuff and does seem to work well. 
+
+Not 100% sure how the NEW rule works for fields of a class. Does it call the constructor of the class which in turn gets the subtypes of the field uses? Not 100% clear how this works. From the example provided about StackUser2 the state machine drive the checking of a field if it has a typestate for the containing class. This may be rules in Fig. 7, more work can look at it in the future but I think the type stuff here checks that the class is consistent and that the methods here wouldn't mess up the field types. *CHECK IN SEM2*
+
+
+Notes about the proofs from the two papers
+
+*Mungo paper*
+* Typability of heap update
+    Ensures that the heap update rule can be typed, fairly straightforward
+* Replacement Lemma for expressions is given
+* Substitution lemma 
+    1. States that substituting two elements of the same type doesn't change the typing of the expression
+    2. Substitution can occur via recursion and the types would be updated by the continuation 
+* Subtyping and Join
+    The join of typing types / typing contexts is a supertype of the joined elements. Makes sense and states that the proof just follows from the definition of join and subtyping. Can maybe get away with it for mine but need to be careful with new Join and will
+    *MIGHT NEED I<=I' FOR THIS*
+        Currently have the system with an equivalence relation in place but may need to change it back to the subtyping version (not a big deal). Currently both are in place but can remove one later on once it is more clear what proofs I will need but I'm fairly confident I will need to add the subtyping system
+* Typeability of subterms
+    "By inversion" is used a lot, as far as I'm aware it means to go "up" from the typing rule which is what I use a lot already
+    The proof of this follows by using the typing rules present to drive the base Expression (E a hole) and then showing it is okay via the inductive hypo. It makes sense and is easy enough to understand
+
+
+Progress and subject reduction
+This is theorem 1. Basically a progress property which states that if we have a label such that an expression can change to a new expression, including its typing then U' must be a subtype of the old U. This can then be used for a corollary
+Things that need checked in this proof
+* Label l
+* New heap h'
+* e'
+* New U' value and delta'
+* U' also needs to be a subtype of U
+
+* The proof uses induction on the structure of the expression e. 
+The inductive case is the Expression context (E). They use the Lemmas given above to prove this. They give the base context which is E[e1], use config rule to get it with a value. Then use Lemma 5 to pull out the e1, use inductive hypo to get e2, and h' etc. Then can then type e2, this allows the premises of R-Ctx to work given them a translation from context to context. 
+
+They then give the BASE cases for this proof. They started with the inductive case and show the base cases which shows how it would work for the different contexts of e. 
+
+* e = v;e'
+    Use a reduction rule to get just e' on its own
+    Config rule to get the typing, then Seq rule can be used to get the typing of v and e'. As v is a value you can then show that the typing output of e' is just delta which then they use config to show is all good
+* e = (r.f = new C)
+    Use the new reduction rule, this updates the heap to have the path pointing at a class. Use the transition rule for typing contexts to get it to the typing that the NEW rule expects. 
+    * Transition h,e using a label l (r.f new C)
+    * New typing context for r.f = new C using CONFIG rule
+    * Above is used to get typing using rule NEW, they then show the same transition between the two typing contexts using the same label l
+    * Prove that h' holds under the new typing context
+    
+    l = r.f new C
+    h' = updated with new path
+    U = void as it's a new
+    e' = * (void)
+    delta = r.f: C[end]
+    delta' = r.f: C[S]
+    U' = * as it's void
+* e = (r.f = c) 
+    l = tau (silent action)
+    U = void
+    Delta'' = Delta', r.f : U'
+    Delta = Delta', r.f: U'
+    h' = updated with new path
+    e' = *
+    U' = *
+* e = (r.f = r')
+    l = r.f=r'
+    h' = h{r' -> null} for linearity 
+    U= void
+    Delta'' = Delta1, r.f : C[S]
+    Delta' = r.f:C[S], r:C[end]
+* e = r.m(v)
+    The most complex one to understand (which makes sense). 
+    l = r.T m T'
+    h' = h
+    e' = e{v/x}{r/this}@r
+
+    Use a label reduction to get h', e'. Then you can use config to get the e'. Then use the config rule to e on its own which you can then type to get delta and delta''. Can get Delta' using a transition with the typing context, then need to show that h' and e' hold under the typing transitions (hardest bit).
+
+Probably best to leave the rest of them there. I understand the general idea of the proof, every case follows a similar pattern but can be a bit difficult to see after looking at it for so long so best reading other paper and then writing down how it would work for mine. If I have correctly extended the current system, the existing proof style could likely be used with an update to the cases and proofs. 
+
+Would be interesting to see how I could show that I <= S was tho as this is only quickly touched upon in this paper. 
+
+Plan for proofs is to follow the approach by the Mungo paper as this is the one I've extended so it follows to use the same proof system. Care will need to be taken on how the subtyping works with I <= (v,S)
+
+Good work this Semester!
+
+    
+
+
+    
+
+
+
+
