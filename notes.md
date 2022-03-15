@@ -500,7 +500,7 @@ Main examples written up. Subtyping example can follow from the inference stuff 
 Not 100% sure how the NEW rule works for fields of a class. Does it call the constructor of the class which in turn gets the subtypes of the field uses? Not 100% clear how this works. From the example provided about StackUser2 the state machine drive the checking of a field if it has a typestate for the containing class. This may be rules in Fig. 7, more work can look at it in the future but I think the type stuff here checks that the class is consistent and that the methods here wouldn't mess up the field types. *CHECK IN SEM2*
 
 
-Notes about the proofs from the two papers
+Notes about the proofs 
 
 *Mungo paper*
 * Typability of heap update
@@ -579,11 +579,1036 @@ Plan for proofs is to follow the approach by the Mungo paper as this is the one 
 
 Good work this Semester!
 
+# Semester 2 
+Proofs will follow the (rough) plan I have discussed above. Similar with the rest of the paper as this is an extension of the Mungo system the proof style they use will also be closely followed. While Papaya writes the proofs slightly differently to Mungo, the main ideas are still present but it is easy to focus on the Mungo system as the type system is close to mine. 
+
+
+A note was made in SEM 1 about the new rule so some quick work will be performed making sure I understand what goes on there. Easier seeing how the Mungo implementation works out this part. I think it would work it out at the constructor part of it when it creates the fields using New. Fig 7 checks consistency stuff as well but easier to see during implementation. 
+
+U ::= C[i], taken out the C[S] part, don't think we want that typed there? Maybe, but not too sure tbh. U is to be an inferred type so we don't need it to type C[S].
+
+Working through the proof and so far there is no major issues. Still think the main proof I would need is to show how the subtyping works tbh but not sure how that would be approached. But so far the main proof works nicely! 
+
+When getting to the call case of the proof I noticed a slight issue near the end where it uses S = S' however I don't have this premise. After some initial work that didn't go anywhere I noticed that my call rule was mistyped in my definitions and that it the last premise should read 
+
+Delta - v : U' - Delta2, r: C[{T m(T') : I'}]
+
+instead of I, this has been updated and fixed the issue I had with my proof.
+
+The proof contained in the Mungo paper seems to work for my system! 
+
+Work will continue today working through more of the examples shown in the extended Mungo proof paper and having a look at what additions need, which seems to be the subtyping proof and the delay case so far. 
+
+Not sure how the subtyping proof would work. It may be possible to not have one (as Mungo doesn't) and leave this as to be seen (future work?) but the delay case seems to be done now. A little bit more difficult to see at the end part but think it all works okay. The start is aokay, Not sure if I would need to prove that Delta'' = Delta' as it seems obvious? As it's just the same rule but in reverse, last case when proving the heap' holds was a little harder but I think the idea was to show that it works using Object for a random R, we then know it works for every R so can use heap again for the updated Delta' and then config. 
+
+    
+Will spend the next day writing up the proofs on paper plus some of the examples to show off. They will be re-written in different wording but will mention if they follow work completed by Mungo previously. 
+
+Good work so far, a wee bit slow but after lunch can write up the rest of the delay case, clean it up and then send off to Ornela, best explaining what I did then can move onto writing up the example stuff in LaTeX too. Will likely need to re-write the proofs later but will keep them as close to Mungo stuff as possible right now as tbh not huge amounts of changes. 
+
+Need to have a quick check to see how the end state is reached in the examples they use to just make sure my example is written correct. It works but need to be sure I write it properly. 
     
 
+With the typestates that users can create we are assuming they are infinitely satisfiable and that they have wait-freedom. If I have time it is *important* to include some algs that can check this when constructing the typestates but it is mainly an assumption that would be present in this typestate protocol as we would convert it from the new scribble. From some of the notes in my book (~page 60) it is possible to look at the work from the MPST-T paper and include the checks to see if a typestate is well formed however, as this isn't the main point of Mungo it can be left as future work later down the line was the main important parts have been completed. Inf sat should likely be checked and added to the Mungo system itself, it isn't something that can be added in the theory to check this property. 
 
-    
+*Update to the proofs*
+In order to update the progress proof to discuss time, two extra (fairly simple) properties are mentioned which is more coverted by the subtyping system but can be mentioned here. 
+1. For any typestate in Delta that is updated in Delta', the time contraints still hold. 
+2. Global Time ("held" in the typestates subtyping reltion) only progresses forward or stays the same. 
+
+Update to the update is to change the language to being more formal, work should be spent writing this formal change up and ensuring it still makes sense for each case. So far it is fairly clear that each thing holds just by the notion of the subtyping relation holding so it isn't a big worry, just make it clearer. 
+
+Rewrite for proofs was completed, they read differently to how they were first presented in Mungo and the time proofs have again been updated to match the new formal definition. 
+
+*Implementation notes* 
+Currently having issues getting Mungo to run on existing example files, it doesn't seem to be able to "see" the files around it. It can't find types unless in the same file and can't find the protocols in the same dir. 
+
+If all files are given to mungo one after the other it seems to find them. Not sure if this is a temp fix however. May be something that should be fixed later.
+
+It's important that once I begin to edit and create different stuff for Mungo that I ensure that correct documentation is taken so when it is updated to the site people can use it.
+
+# JastAdd Notes
+* Based on attribute grammars and object-orientation
+* Props of abstract syntax tree nodes to be programmed declaratively - attributes
+* AST nodes are objects, so with attributes it is like a oo graph model
+* As it is more focused on declarative programming, the OO becomes extensible, can just add new attributes, equations, and syntax rules. 
+* The user can organise rules arbitrarily to form modules (may mean mine can just fit in some where)
+* The abstract grammar is written in classes so slightly differently to EBNF
+* From this abstract grammar, an API with constructors is generated for building AST nodes and methods for traversing the AST
+* A good example is shown in the tutorial sheet, looks like it would be easy to get different parts of information. 
+* Can add some ordinary java methods in a separate module called an *aspect*
+* Aspects use *inter-type declarations* to add methods to existing classes
+* I suspect Mungo uses a parser for the main method itself but this is something I will need to explore more of
+* Two different attribution mechanisms - synthesized and inherited (not OO related) attributes
+* Synth attributes propagate info upwards, inherited downwards 
+* An attribute is *a = e(b1,...,bn)* where is the attribute, e is an expression with bk attributes in the AST
+* The attributes and equations are declared in AST classes, so can think of each AST node having a set of declared attributes and equations
+* Each attribute is declared synth or inherited 
+    * synth attribute is defined by an equation in the node itself, if we have all the info in the current node or its children
+    * inherited attribute is defined by an equation in an ancestor node, if we need info from further up the AST tree
+    * eq defines the actual equation for an attribute 
+*  E.i defines an inherited attribute, meaning *child.i = expression* but doesn't need to be the immediate child and can be further down the tree.
+* An attribute is allowed to be a refernce to an AST node
+    * Can therefore connect different nodes to each other and form a graph 
+    * Can use referenced objects in equations etc, so we can have non-local dependencies 
+    * this, meaning a reference to the node itself
+    * k.v, accessing the v attribute of the node referred by k
+    * i.G.t, accessing the t attribute of the G child of the node referred to by i
+* Attributes may have parameters
+* Think declaratively, think of the properties we would like to have computed
+    * A bit harder to think of how to do it in practice but easier once I get a grasp of how Mungo works
+* An attribute should be synthesized if the subtree contains all the info it will need or it can be inherited if there is more information outside that subtree that is required. 
+    * Can also make a mix of both if we need some info outside the subtree and some inside
+* We can view attributes as (abstract) methods of AST nodes. 
+* questions are like method implementations
+* When accessing attributes, java method call syntax is used.
+* For equations the right hand side is written as a java expression
+    * Should be a side effect free change
+    * Equations represent definitions of values, not effects of execution
+    * Careful about this because equations aren't performed in the order that may be expected so can lead to subtle bugs 
+* From the example we can see that due to the declarative nature "functions" can be declared after they are called or needed and are added to different nodes as required. 
+* syn, inh, eq. Where syn, inh are what we expect and eq defines the value of an attribute 
+* Only local vars can be modified  
+* equations for inherited attributes look like method chaining 
+    * Allows attributes for sub nodes to be defined 
+* For composite attribute values like sets, lists, maps etc. These values are often sets of node references. 
+    * When accessing composite attributes only uses mutable operations during construction of the value i.e. Can construct a set by adding elements to a freshly created set object
+* Collection attribute has a compositive value that is defined a combination of contributions, they can be located anywhere in the AST.
+    * Each contributing nodes declares that it is contributing to the attribute 
+    * Not sure if this is the type of attribute that I would need to use
+* Circular Attributes
+    * When we have a property depending on itself 
+    * Need to use fixed-point iteration
+    * Vars are initialised to some val, and assigned new values in an iteraive process until a soltion to the system is found
+    * Might need this for recursion but best looking at how Mungo uses it
+* Rewrites
+    * Allow sub ASTs to be replaced conditionally, depending on attribute vals
+* Refines
+    * Equations in existing aspects can be refined in new aspects, similar to overriding without needing new subclasses. 
+
+*Syn attributes* 
+If we have a syn attribute x of A then there must be eqs in the subclasses of A defining x. so 'syn T A.x()' declares an attr for A that all subclasses must provide, i.e. it's like an abstract method
+
+'eq A.x() = Java-expr' defines the equation for the attribute and it's children
+'syn t A.x() = Java-expr' declares a syn attr but also the default equation
+
+*Inh attributes* 
+'inh T A.y()' y is an inherited attribute in class A and of Type T. Must be classes defining y in all classes that have children of type A, so like the opposite of syn. The 'eq' must be located in the parent node, not A itself. 
+'eq C.getA().y() = Java-expr' - defines the value of the ingerited attribute y() of the A child of a C node. This executes in the context of C
+
+*Col Attributes*
+Have composite values defined by <contributions>. They are similar to synthesized attributes which add their val to the coll attr value. Contributions may be located in any node in the subtree of the colletion root node. 
+
+'coll T A.c() [fresh] with m root R' - cool att with type T on A with name c(). Fresh tells us how the intermediate collection result is initialised, so an empty instance of the result type in this case. With m, specifies the name of a method to be used for updating intermediate collection objt. The root R specifies the collection root type. Coll mech starts by finding the nearrest ancestor of type R, then the subtree from R is search for contributions, so doesn't need to be the subchild of A. 
+
+'N1 contributes value-exp when cond-exp to N2.a() for n2-ref-exp;' - contribution decl. N1 is the type of AST nodes that provide a contribution, value-exp evals to an object to be added to the collection. Can be conditional. N2 is the node type where the collection is declared, a() is the name of the att. N2-ref-exp which evals to a ref to the AST node that owns the collection attr. Use this when the collcetion root is different from the target.  
+
+
+*JADD and JRAG Files*
+- jrag for declarative aspects, when attrs, eqs are added to the AST classes
+- jadd for imperative aspects, where you adds fields and method to the AST classes
+This is just best practice but best to be followed this way
+
+*Rewrites*
+rewrite A { to B {... return expr;}}
+An A node will be replaced by the node specified in the Java expression expr. It will happen when the node is accessed (by a get() method -> might help explain the large getGraph file?)
+
+*Circular attrs*
+Attrs can be circularly defined, meaning that the value of the attribute can depend on itself. They are evaluated iteratively, starting value given in the declaration of the attribute
+'syn T A.x(int a) circular [bv];
+eq A.x(int a) = rv;'
+
+starting value is bv, an expr. Rv may depend on rv.
+
+*AST Notes*
+The syntax constructs discuss a generated API for each construct, would need some more info on what this is. Seems to generate class code for it
+
+ASTNode is the parent of the AST graph
+
+* abstract A; - makes an abstract class of A
+* B: A ::= ...; - class B extends A, B corresponds to a production rule of A
+* C: A ::= A B C; - C has three children of types A, B, C. The api has getA(), getB() methods
+* D: A; - D has no children, it's an empty production of A
+* E1 ::= A; - E1 has a child of A, so 'class E1 {A getA();}'
+* E2 ::= [B]; - E2 has an optional component of type B
+* E3 ::= C*; - List of zero or more C nodes, the java class uses a List
+* E4 ::= <D>; - Has a token component of type D. So has a string of D;
+* A ::= /D/; - Nonterminal attribute D. D is computed on demand
+* F ::= Foo:A Bar:B - names children of type A and B
+* G ::= Thing:B*; - can name lists too
+* Can also type  tokens too
+
+* classes are inherited by subtypes, so have the children of classes too
+* Can add more children but not remove them
+
+* JastAdd generates the get methods to get the children of a class, so need to use the (a.hasB()) etc if using optional attributes 
 
 
 
+################################################################################
+<Notes on Mungo system>
+
+If we give the -pi flag mungo spits out the inferred type of a class. One of the first things we can try to do is make this spit out the inferred typestate with delays.
+# src
+## jastadd
+
+*frontend*
+### Annotations.jrag
+* provides an Annotation aspect that checks for typestate annotations on the 'Modifiers'
+* Provides two getTypestateAnnotation attrs for the Modifiers node
+* Has a rewrite for 'ClassDecl' to rewrite ClassDecl into TypestateClassDecl
+
+### Complication.jrag
+Hard to see use atm but likely easier later on
+* provides a 'Compliation' aspect
+* refines 'NameCheck' to a new attribute on this compilation node which is a collection of 'problems' 
+* Provides some public methods that return some error info
+* Provides a protected Program.compile() attr
+    * compiles the different files on the path 
+* Program.collect()
+    * Collects semantic and then typestate errors
+* Program.compile(String[] args)
+    Adds the args given to the compile paths and then collects them
+
+### CreateTypestate.jrag
+* TypestateDecl.createTypestate()
+    * creates a initNode and then adds new typestate
+* State.CreateTypestate()
+    * Something about LoopNode
+    * Add next typestate
+* TypestateMethodList.creteTypestate()
+    * New loopNode then adds all the typestatemethods to this loopnode
+* EndTypestate are just EndNode
+* TypestateMethod.createTypestate()
+    * returns a newMethodNode with different TType, access etc
+* TypestateSwitch.creteTypestate()
+    * New switchnode
+    * get creates the typestate for each switch case and adds this to the switchnode
+* TypestateLabel.createTypestate()
+    * gets the statenode if it has one or creates a typestate whatever the target is
+* TTypestate.createTypestate()
+    * new loopnode and addNext of getTypestate (maybe the current node?)
+
+### Debug.jrag
+* Program.debug(PrintStream printStream)
+    * Rewite (not sure what this function is) but I assume it prints out whatever the printstream is from the program declaration (which I assume is the top level node)
+* TypestateDecl.printState()
+    * Gets the id of the initial state then prints out all the paths of the node
+    * Gets all the states of the typestate and prints out those ids plus the paths
+    * Assuming this is the declared typestate not the inferred one but not quite sure
+
+### Enums.jrag
+* A collection of enum labels which is a hashset of strigns, looks to be defined at root but would need some more info on how colls work 
+* An inherited attribute for body definitions in the subtree of *EnumDecl* such that the bodyDecl has Enum ancestor as this
+
+### Errors.jadd
+Not sure what the difference is between jadd and jrag but will check the docs later. Seems to be the file that collects semantics and maybe the typestate info and reports the errors
+
+* Provides some protected methods (maybe attrs) for typestateCheck and semanticCheck that returns void
+* So collects all the semantics and typestates of the ASTnode (not sure where this is, maybe root?)
+* Provides a TypestateError abstract class which has fairly standard error properties that it can then print out
+* Provides info, warning, semantic, syntax, lexical, and symbol errors for typestates
+* Declares a collection on the compilationunit that will hold all the typestateerrors as an arraylist
+* The compilationunit and program are given a numWarnings property
+* Program.errors is set as an array of typestateErrors also
+* Program is given a hasErrors and hasWarnings attributes
+* ASTNode class is given an addInfo, warning, and semanticError methods 
+    * Where addError gets the compliation unit ancestor, sets the filepath and adds a new error to it
+* A slightly difficult to understand file atm but should be easier to understand later down the line 
+
+### GetGraph.jrag
+This is a very large file and some have TODO comments so it's difficult to see what is and isn't to be used. It's likely that most of this file can be kept as is, maybe adding a bit for time but we shall see later on
+
+*eq WhileStmt.getStmt().getTargetStmt() = this;* 
+For any child nodes in getStmt for this while, it is given a new attr "getTargetStmt" which can point to the whilestmt. Above is an equation, meaning we give a value for the attribute.
+
+*inh Stmt ContinueStmt.getTargetStmt(String label)*
+As we don't have enough info in the ContinueStmt node for this attribute, set it to inh and make sure it's parent node (Program) gives the definition for this attr based on its information
+
+* Presents attributes to get continues, breaks, and label statements
+* Inherited attributes for continue, break to get the targetStmt
+* For TryStmt give the giveBlock statement access to itself
+* A lot of nodes are given a null value when trying to fetch the typestateVar of the node
+    * boolean, unarys etc. Par and AssignExpre get the expr and destingation attr to give it's typestate var
+* conditional expr gets the typestateVar of the true or false branch
+* MethodAccess gets the type, finds if its a typeclassDeclType and then returns it?
+* A lot of other nodes don't have typestate vars so define it as null. I suspect getTypestateVar is defined as a syn node in the parent class which means we have a lot of repeated null eqs 
+* for a VarAccess node it checks if its a qualified type and gets the typestateVar
+* qualifiedTypestateVar gets qualified access, gets the left access and then gets the typestate var
+* A lo of other nodes are given null for their getTypestateVar
+*lazy* attributes are cached by justAdd and best for attributes that are accessed often as it will reduce the amount of repeated computation
+* Declarator, ParameterDeclaration, MethodDecl are given typestate fields
+* for a ClassDecl node the getTypestateFields attr creates a new set of Declarators, gets all the body declaration nodes, If it's a field declaration it gets the type, looks up if it has a TS and has a typestateClassDeclType, if so will collect the Declarator nodes from this field.
+    * So it checks if a field has a typestate and then adds all the declarations from that field
+* For a ClassDecl to getGraph()
+    * If this class has a typestate then it sets it as a class declaration node
+    * Gets the typestaetDecl, creates the typestate and normalises it
+    * Adds a field graphNode r which is the TypestateDecl
+    * Gets the constructor graph
+    * Then if it has an empty constructor gets each typestateField and checks if it has an error
+        * Maybe this is what checks the fields of a class to ensure it matches the typestate?
+    * Sets addTypestate to true
+    * Then gets the graph for every methoddecl
+    not entirely sure what 'getGraph()' does, maybe it is the attribute that starts the checking process?
+* ClassDecl.getFieldGraph(GraphNode r (which I assume is the field))
+    * Gets the typestateFields and enssures they aren't null
+    * getsTheFieldGraph uses it's other attribute by supplying more paramters
+    * For every typestate var it adds it to our env set and the returns this typestate field
+* ClassDecl.getFieldGraph(...) seems to be the attr that is used to check for recursion
+    * First part will set the current typestate to point to the graph if we have recursion and know where it points too
+    * Otherwise it adds this this to our visited map
+        * if an end node we add it to the current state and return
+        * if not we get all the typestate fields, and put them into our visited map
+        * We then create a tmp GraphNode and add all the current typestates of the fields to it
+        * It then adds all the current typestate fields to our visited map, assuming this is for recursion
+    Not massively sure exactly what this does but it looks to be the recursive stuff so can hopefully ignore it
+* Different nodes are given access to the classdeclancestors
+* MethodDecl.getGraph()
+    * Creates a new env that stores typestateVars
+    * getTypestateFields (in the method or maybe the class)
+    * resets the connection and adds it to the env
+    * Gets the parameters of the method, checks if they are null an then creates them if they are
+    * Then resets the connection graph for this typestate method par and then adds it to the method
+    * Does some further stuff if its an abstract method
+* Creates a new collection for ConstructorSuccessors after adding the ConstructorDecl as the root of this tree
+    * The ConstructorAccess contributes getTarget to this colection for getConstructorDeclAncestor
+* ConstructorDecl.getGraph()
+    * Gets the graph on constructor successorts
+    * For every typestateField, it sets them to new ones if not created and then resets the connection
+    * For every parameter in this constructorDecl, it gets any of them that are typestate and makes them a typestate Par
+        * Resets the connectionGraph for this typestate Par
+    * Gets the block (?), then getGraph of the env
+    * Gets all the typestate declarations again and adds them to the env 
+    * It then connects every typestate to this graph 
+* ConstructorDecl can get the parameter typestates 
+* defiens a syn getGraph(Set<TypestateVar> env) for statements, I wonder if the env is our Delta typing env
+* Block.getGraph (assuming block is a subclass of STMT) then it
+    * gets var decls (which I assume is a syn attr somewhere) Adds any typestate decls to the env
+    * Gets the statements of this block from the end to the start by getting every graph
+    * Then checks every typestate for this statement and then removes it from the env (not quite sure why)
+* Different stmt types need to have a getGraph method declared so it looks like
+*If we have a syn attr then the subclasses need to define how it work?*
+* For a trystmt it checks each catch clause 
+* LabeledStmt.getGraph
+    * For every typestate we have in the env we put a new loopnode as its start and then add the end to be where it currently is (makes sense from the rules)
+    * gets the stmt graph which I think updates the env variable, 
+    * For every v in env it removes this Loop from the start, then adds the v.current as the new current of v (likely falls into how the rule works)
+    These may relate the typing rules for this individual stmts 
+* *Might need to add a getGraph attr for the delayStmt*
+* IfStmt.getGraph(env)
+    * Adds a new loopNode to the TypestateVar v
+    * Easier having a look after getting a better idea how start and end work but it does seem to look at the inferrence rules maybe
+* WhileStmt is similar looking to if 
+* Most of these attrs are a tad difficult to understand what they do at the current moment, it's getting easier to understand them the more I read but I'm hopefull it'll become easier to understand with more info later on 
+* They continue to give these getGraph attrs for other java statements however I would only need to add a delay one I think
+* SwitchStmt.getGraph(env)
+    * Adds some new switchNode or loopnode to the start of the typestate vars
+    * Again likely not something I need to worry too much about as the logic is a tad confusing given that it will be accessing and modifying different nodes based on the switch
+* ReturnStmt info is given which seems to check an error from the result 
+    * Maybe one of the places that it trys to see if the typestate is used incorrectly 
+* Declarator.getGraph(env)
+    * Removes itself from the env if it's a typestate
+    * Gets the typestate var for the declarator, if it is null, then it adds a new init node to this typestae
+    * if not null then it exists for this delcarator (so I assume we have found inferred one) so in this case we check for its errors
+    * If the initalise node (don't know the method decl yet) is an instance of a classinstanceexpr and it's first arg is also a classinstance (not sure why) then 
+    * If the first arg has a TSType then it adds the current node to the typestae for this node
+    * else it checks error
+*One diffucltiy will be determing which rules are the decalared typestates and which are the inferred ones*
+* AssignExpr.getGraph(env)
+    * get destination typestate and gets the source expr
+    * If soruce expr is condionalt then it checks the false and true versions
+    * Checks if source is classinstance, if so, makes d a new InitNode
+    * The source also may not have a typestateVar 
+* LogicalExpr in a slightly different order of getting grpahs but unsure why 
+* ParExpr, I assume this means parent expression but unsure
+* Would need to work out why they use v.end.put(this, v.current) a lot, they also use a LoopNode too but not sure why 
+* ConstructorAccess.getGraph(env)
+    * Gets the target (?) and then gets the typestate fields for this and gets the connection graph
+* MethodAccess.getGraph(env)
+    * 'Plugs' the fields, which gets the plug graphs but unsure what a plug graph is
+    * includes a section if the method is a typestate method but unsure what it is doing here
+
+A long and rather unintuitive file, that I suspect builds parts of the AST graph but unsure how it does this atm and what its use is for. May be something to ask about as it is a large field so would be best if I didn't need to touch or deal with it 
+
+### GraphNode.jrag
+GraphNode class represents a node in the graph structure that represents a typestate type, it is abstract and inherited by other classes:
+MethodNode -  A state where a method call should be done
+LoopNode - Node representing a state where you can choose a set of continuations
+SwitchNode - Procedes based on the return of a method call
+InitNode - It is the inital node
+EndNode - Used as the final state
+
+Class can traver a graph
+check equality between raphs
+normalise a grpah by removing all empty nodes
+check if a graph has empty/loop nodes
+
+*abstract GraphNode class*
+Fields:
+Access type
+String id
+TypeDecl parameters
+ASTNode expr
+ArrayList<GraphNode> next
+String signature
+
+Methods:
+toString
+getters
+addNext(GraphNode n)
+hasNext()
+
+Contains an quivalence relation to store doubles of GraphNode elements, in order to check that two nodes were revisted at the same time by the "includes" alg
+
+Provides a protected TupleSet class which includes a private TupleEntry class which has two GraphNodes
+    It also checks the hasCode of these two graphNodes and if they are equal
+A reltion is then a set of TupleEntries which checks if it has a tuple of nodes, can insert and then remove them
+
+GraphNode errorNode
+GraphNode expectedNode
+
+boolean includes(GraphNode n, TupleSet ts)
+Seems to follow subset reltion perhaps
+
+So we have G1<=G2 if Start holds
+Have the end reltion too for R
+R holds g1<=g2 when (G1, G2) in R
+{G1}<={G2} if G1 not empty and for all G1 in {G1} then G1 <= G2 Set relation 
+
+Function well explained for some of the rules so should look at it for when I come round to needing to add mine
+
+Includes a starting includes function and then gives a nextToString function also
+
+*Normalise graph part* 
+
+isNodeVisited, give the object a set of visited nodes, checks if it is in it, and adds itself if it isn't
+
+removeVisited(visited)
+
+__hasLoopNode (polymorphic on LoopNode) Checks that for an unvisited graphNode it's next graphnode has a loopnode. Not sure what the base case is, maybe something to do with the polymorphic on LoopNode
+
+hasLoopNode, same as above but gives it a new empty visited set
+
+nextArrayList - returns an arralist with itself as the first ele
+
+computeNextArrayList - Normalises the GraphNode at pos I on the 'next' arrayList
+
+normalise(Set<GraphNode> visited) - If visited just return the nextArrayList otherwise it goes through all the node in 'next' and normalises tem before adding them to our new next list
+
+normalise() - Does the same as above, creating new visited set and lists but this time will return this or normalise it before returning 
+
+The main idea seems to be about removing LoopNode from a graph where 'next' I assume is the children or siblings of a node. Not something I will likely need to worry too much about tbh
+
+*Count EndNodes*
+
+isPlugged checks that a non visited node has a next node that has been added to the visited set
+
+isReturnedPlugged does the same thing above
+
+isReturned does the same but they all call either isPlugged/isReturned etc. 
+
+*Print* 
+
+getState returns the interger in the stateMap relating to 'this'
+
+isState, if this node only has one expression next and it is either a switch or endnode then return false
+
+toState will return stateMap of the node itself or the next node if it's a switch or end
+
+printState, for a non visited stream it will println "State" + its state number plus the number of the nodes on it's next before adding those nodes as well
+
+stringState - the starting function that sets up the visited and setStates to begin the printing stuff
+
+*debug*
+printPaths - prints the next nodes and what the path is like for this node
+
+*graph nodes*
+Some comments here which give some syntax for the graphs
+Looks like the graphs are for (declared or inferred, haven't worked out which one yet) typestates, talks about method nodes, the states it can lead to and then some switch nodes
+
+*MethodNode*
+Instantiates a class that represents a method call
+
+equalnode(n) - checks if the iven node is the same by checking the id of the node, then the number of parameters it has are all the same type as this node.
+
+*SwitchNode*
+A class where the continuing state depends on the result of the method call. Comments say it inherits from MethodNode but it seems to just extend the GraphNode
+
+Just uses the super version of includes
+
+*SwitchCase*
+Just the case for the switches, checks if they are equal by plus the super call
+
+*LoopNode*
+Aux node for creating a typestate graph, represents a state where there is a possible recursion
+
+__HasLoopNode -> True 
+
+onlyEndNodes - For a non visited node it checks how many of it's next nodes have onlyEndNodes, returning -1 if any don't
+
+*EndNode*
+Represents the final state
+Fairly simple, returns 1 for onlyEndNodes and has standard includes
+
+*InitNode*
+Represents the inital state
+
+*ReturnNode*
+Extends the EndNode used just for isReturned -> true and then the toString
+
+*PlugNode*
+Extends loopNode returns true for isPLugged 
+
+*ReturnPlug*
+Extends plugNode returns true for isReturnPlugged
+
+So as a summary it seems that this class represents a graph structure for a typestate type (declared or maybe inferred) which has MethodNodes, LoopNodes etc and can check if they are equal. This may be on of the files I need to extend or modify so that method graphs store clocks info as well?
+
+### javaASTFunctionality
+A lot of attrs here, only perceived major ones will have notes taken
+* CompilationUnit ASTNode.getCompilationUnitAncestor() 
+    - Gets the program and then finds the compilationUnit assoisated with this ASTNode
+* TypeDecl has falase attributes for it's base type unless impleneted by its subclasses (makes sense)
+* Provides some syn "getters" that must be implemented by the subtypes as well
+* The subclasses of TypeDecl then give the implementation of these syn attrs
+    - TypestateDecl
+    - EnumDecl
+    - ClassDecl
+    - TypestateClassDecl
+        - Provides an attr that returns the typesateDecl of this ClassDecl, finds the elementValuePair (?) then gets the expr of what this is, finds the CompilationUnit and checks if it has a typestate Decl
+    - InterfaceDecl
+    - MethodDecl
+        - Lets block ancestor access itself
+        - Col node for MethodDecl.getUsedTypestateFields 
+            - add is the method to add to this HashSet with root as itself
+        - getTypestateMethod
+            - Gets a classdecl (guess) then checks if it has a typestate decl to this class
+            - If so finds the typestate method relating to this MethodDecl node and returns it
+        - selfSuccessors coll
+        - selfMethodAccess coll
+        - Contributes to these coll by providing getTarget to the ancestor of this MethodDecl
+        - contributes itself to selfMethodAccess as well
+* The parents of a ComplicationUnit must provide getClassDeclAncestor
+* MethodAcces.getTarget() uses lookupTSMethod which we shall see later
+* MethodAccess.signature() - returns a string with the method sig
+* MethodAcess.isTypestateMethod() - checks if this MethodAccess is a typestate method
+* Access I assume is a subclass of Expr
+* Access.getQualifiedAccess()
+    - Gets the parent of the dot, maybe what is left and right of "r.m"?
+* Access getLastAccess, not sure what access is yet so difficult to see what this will do
+* More stuff on Access and Dot, not hard to grasp but difficult to see use when I am unsure what access and dot are
+* VarAcess contributes getDeclarator to MethodDecl.getUsedTypestateFields()
+    - Contributes either lookupTSVar and the variableDecl or the qualifiedType
+* SwitchStmt has case labels collection
+
+### JavaSemanticCheck
+Provides the semantic check function for different AST nodes.
+
+* EnumDecl has an empty check
+* TypestateClassDecl
+    - If it can't find a typestate for a specific class
+    - Also checks if a method signature definied in a typestate is not defined either
+* Declarator
+    - Checks if a typestate field is declared in a non-typestate class
+    - Ensures typestate fields are private
+    - Ensures they must be static as well
+    - Checks that a field with a typestate can't be used in an array
+* MethodDecl
+    - Return object of a method with a typestate shouldn't be an array
+    - Methods not defined in the typestate and use typestate fields can't be private
+* ParameterDeclaration
+    - Ensures parameter with typestate isn't an array
+* MethodAccess
+    - Method call should have a target (this is the object we call it on)
+    - Method call should have target the method is declared wion
+    - Can't use a method call defined in a typestate within another method not defined by a typestate
+* SwitchStmt
+    - Ensure the enumeration type should be a switch case
+
+### LookupConstructor
+* ConstructorAccess.getParameterTypes()
+    - Gets the types of the arguements for the constructor
+* ConstructorAccess.getTarget
+    - Provides the ConstructorDecl 
+* SuperConstructorAccess.getTarget()
+    - Finds the construcor given the parameters
+* Collection that holds all the constructor details
+
+Overall the aspect always the constructor to find its decl (likely won't need to worry about this file)
+
+### LookupTSMethod
+* MethodAccess.getParameterTypes()
+    - Gets the parameters of this method
+* TypestateMethod.getParameterTypes()
+    - Same as above, slightly more complex call chain however
+* MethodAccess.lookupTSMethod(TypeDecl t)
+    - Returns the typestate MethodDecl that matches this MethodAccess
+* TypestateMethod.lookupTSMethod(TypeDecl t)
+    - Given a t, looks up the TSMethod given this TypestateMethods id and parameters - md for a TS
+    - GetTS type of this
+    - Then checks if md is equal to td (this)
+    I think this returns the TSMethod given a typedecl (which I guess can be a class or something)
+* syn TypeDecl.lookupTSMethod(string method, TypeDecl[] parameters)
+* ClassDecl.lookupTSMethod
+    - Searches it's method for the TSMethod that matches
+* coll Set<MethodDecl> ClassDecl.getMethodDecls()
+    - Collect MethodDecl for a class
+* MethodDecl.isTarget(String method, TypeDecl[] parameters)
+    - Checks if a MethodDecl is the target with method name and the same parameters
+* syn TypeDecl.lookupTSMethodTargets(String method, TypeDecl[] parameters)
+* ClassDecl.lookupTSMethodTargets
+    - Adds all the methods that are a target (I assume for this TS)
+* MethodAccess.lookupTSMethodTargets(TypeDecl t)
+    - For the typeDecl t looksup TSMethod targets using the MethodAccess id and parameters
+
+### LookupType
+* syn boolean CompilationUnit.localLookupTSType(string typename)
+    - Checks if the name of the first TypeDecl is equal to the typename
+    So I assume the compilationunit has a list of types (likely methods) and checks the first one
+* Program.getChild().getCompUnit(String packagenName, String typeName)
+    - Provides null for the inherited attr getCompUnit name
+* inh CompUnit CompilationUnit.getCompUnit
+* inh TypeDecl TypestateMethod.lookupTSType
+* Program.getCompilationUnit(int j).getCompilationUnit()
+    - If the program file suffix exists, then compile it
+    - If the program protocol suffix exists then compile it
+    - Return the CompilationUnit 
+* CompUnit.getPackageString()
+* CompUnit.primitiveOrDefault
+    - Gets the typename
+* TypeDecl CompUNit.lookupTSType(String typename)
+    - Gets the packagename, checks if the typeName is a primitive or a default type, f not
+    - If typeName is in the localLookup and a singleton we just return that
+        Not sure what this refers to but I'm sure it's fine
+    - If the compUnit doesn't equal null we just return the first TypeDecl
+    - Else other stuff
+    Probably makes more sense when I know what a CompilationUnit is but for now this returns the TSType of a typeName
+* CompUnit.lookupTSType(packagename, typeName)
+    - Does the same as above basically
+* Access can also lookupTSType but again unsure why it would need to
+
+### LookupTSVariable
+unlikely to be the sort of thing I will need to care too much about but it might be useful for when I need to work out the clock names for a typestate declaration
+
+* For a NameDecl it seems to just return null in most occasions 
+* coll Set<Declarator> Block.getVariablesDecls()
+    - Every Declaractor adds itself to its block ancestor
+* inh Declarator.getClassDeclAncestor()
+* inh Block Declarator.getBlockAncestor()
+* eq Block.getStmt(int j).lookupTSVariable(String var)
+    - For all the vars decl in this block, find the one that equals the var then return it
+* MethodDecl.getBlock().lookupTSVariable(String var)
+    - checks the paramters in this Method decl and returns that NameDecl
+* ConstructorDecl.lookupTSVariable
+    - Checks all it's parameters and finds the ones that equals the parameters
+* TypeDecl returns null
+* coll Set<Declarator> ClassDecl.getFieldDecls()
+    - Gets the fields of a class
+* syn NameDecl ClassDecl.lookupTSVariable(String var)
+    - Gets all the declarators from the Fields and returns the name if it matches the var string
+* abstract NameDecl class
+    - VarDecl
+    - ParDecl
+
+### Rewrite 
+Focuses on the printing of Java Typestate programs
+
+* public class TypestateStream
+Used to create an output File Writer, and prints the AST
+    - String path
+    - PrintStream printStream 
+    - StringBuffer sb (like a mutable string)
+    - PrintStream out
+
+    - int indent
+    - String indentString
+    - boolean changeLine
+
+    - Provides a list of printing methods
+
+* Different (looks like most) expressions are given a Rewrite(TypestateStream stream) method that writes the node to the typestate stream
+* Will need to include my new statements here (delay, and clock constraints)
+* Includes re-writing typestateDecl and the dfferent methods
+* Might actual work as a list of all the nodes they have?
+* Has methods for an arbitary ASTNode
+
+### RewriteAccess
+The rewrite operations in the file above iterate on a Dot until its left node is not a package reference or the node itself is not a Dot anymore
+(Still don't know what a dot is)
+
+* rewrite Dot
+    - Rewrites it to an Access node where it sets the package name to the left of the dot then returns the right of the Dot
+    - Or it returns the packagename
+
+* syn lazy boolean Dot.isDotPackage()
+* syn boolean Expr.isPackage() 
+* syn lazy string ParseName.getName() = name()
+* Dot.getRightName()
+    - Checks if something is an instance of parseName, if so gets it
+    - ParseName is another AST node
+* syn boolean CompUnit.isPackage(String Package)
+    - Checks packageDecl and checks if it starts with Package
+    - Or if the import decl have Package as a starting one
+* syn ImportDecl.startsWith(String Package)
+    - Checks the specific import declaration and checks if they have package
+    - This may be broken as it doesnt' seem to work when I try it on my end
+
+### Type
+Alg for getting the type of an Expression / Access (think access is an object name)
+
+Each non-qualified expression has a type of
+- ParseName: which looks up the code hierarch for block vars, method/constructor parameters, fields etc
+- Method Access looks up in the hierach for matching class method signatures
+
+Qualified types are evaluated access by access on the AbstractDot class (again still not too sure what this is yet). I assume this class is literally the dot we see in method calls etc. Method getQualifiedType gets recursively the parent type of each access of the abstract dot so it can pass it as an argument to method getType(TypeDecl t) to evaluate its own type. 
+- ParseName searches the class of its qualified type.
+- MethodAccess searches the qualifiedType for mraching method signatures
+
+* Dot.__getQualifiedType()
+    - If it hasParentDot then looks up to see if that has a qualifiedtype and if so returns that
+
+### TypestateCheck
+* ClassDecl.typestateCheck()
+    - getGraph() (for classDecl)
+    - Checks thats if a class is a subtype of another class then the typestates must also 
+* Declarator.typestateCheck()
+    - Checks if the object is used but not initialised then calls checkTypestate further down
+* ParameterDeclaration.typestateCheck()
+    - Same as above but for a parameters declaration 
+
+### typestateFunctionality
+Provides some functionality to the typestates. Main ones being stateMaps, duplicate names for states, if it's reachable and circular path finding.
+
+* inh State TypestateLabel.getTarget(String name)
+    - covered by TypestateDecl.getState and getInitState which uses the next attr
+* Map<String, State> TypestateDecl.getStateMap()
+    - Creates a map of state names to their state number
+* isDuplicate is provided for State
+* TypestateDecl.isDuplicate(String name)
+    - Checks if a given typestate name is duplicate
+* syn Set<State> State.reachable() circular [new HashSet<State>()];
+    - eq State.reachable()
+    - Adds all the successors, and their reachable states to a Set
+* coll Set<State> State.successors() [new HashSet<State()>]
+    - TypestateLabel contributes getTarget to above
+    - getTarget has been defined above and is the state name to its number
+* State.getCircularPath()
+    - finds the circular path to this state
+* coll Set<String> getLabels
+    - TypestateSwitchCase contributes getLabels to above
+    *This may be the style I should take in order to get clock names*
+* coll Set<TypestateMethod> TypestateDecl.getMethods()
+    - TypestateMethod gives itself to above, specifically it's parent
+
+### typestateSemanticCheck
+For a 'State' which I assume is a typestate state (likely declared) it checks that it doesn't have circular path, duplicate states, or that the state isn't reachable
+
+for TypestateLabel it checks that a definition for the state has been provided.
+
+Think it checks that a type within a typestate is also a typestate class
+
+TType ensures that a type within a typestate (I think) is a java class
+
+For switch it ensures no duplicate case label
+
+- Might need to make a semantic check to ensure no other typestate protocol has the same clock names?
+
+TypestateMethod checks if the method should return an enumerate label and if the labels are all defined in a switch label
+
+Also ensures there is no duplicate method signatures for the typestate method signatures 
+
+### TypestateTypingEnvironment
+Is the the type enviroment structure
+
+* class TypestateVar
+    - GraphNode current
+    - Map<ASTNode, GraphNode> end
+    - Map<ASTNode, GraphNode> start
+
+    - has a list of startGraph, Expr, errorGraph, and errorExpr
+    - A lot of methods are left out, likely as this class will be extended
+    - but can still add errors and typestate to the graph
+    - The class will then report these errors
+    - checkTypestate(GraphNode t, String errorMessage)
+        - Checks if one typestate includes the other, if not tehn it prints out the object mismatch
+    - '-pi' is here if so adds info abou the stringState and prints that out
+
+* class TypestatePar
+- Is a parameter version so returns parameterNodes
+
+* class TypestateField 
+- class for a typestate field 
+
+*grammar*
+### Typestate.ast
+* TypestateClassDecl is just a subtype of the ClassDecl node
+    - Makes sense, no other class info here tho
+* TypestateDecl is a subtype of TypeDecl and contains a single InitState and then a set of States after it. Nothing special about InitState, it's just a state
+* State contains an ID token and then a Typestate child
+* Abstract typestate subtyped by MethodList, EndTypestate etc. Looks like the equiavalent of S from the grammar 
+* MethodList is just a list of Methods
+* EndTypestate is just a typestate
+* A TypestateMethod has a TType, ID token, TTypeList, and Typestate child
+* So TType looks like the return type of a method described in the typestate
+    - This has an Access node (which I'm not too sure of yet)
+* TTypeState is of TType and extends it with a Typestate child
+* TTypeList is the args of a method, which are again TTypes.
+* A switch case is Label token and a typestate child
+
+
+### TypestateTypes.ast
+* UnknownTypeDecl, NoNameType, ClassType, and ObjectType are all empty TypeDecl subclasses.
+* PackageType has some NTA modifers, an ID token, and a list of BodyDecl NTA
+* PackageParseName is a subclass of ParseName and has Package and Id tokens
+
+So Mungo uses ExtendJ which is the JastAdd compiler so some nodes are already defined as shown by the ExtendJ API documentation which is okay... but can use it to look up any classes we are unsure of, i.e. Dot.
+
+*parser*
+This file is written in beaver syntax, which is the parser the compiler uses.
+After a quick look at the file, it's clear it is adding more specific parsing details to the typestate classes that were defined in the grammar. 
+
+The main thing we care about are "action routines" which are called when the symbols on the right hand side were matched and are about to be reduced to a signle nonterminal symbol.
+
+Can assign names to the symbols on the right to access these symbols in the action routine.
+i.e.
+'expr = expr.a MULT expr.b {: return new Expr(a.value * b.value); :}'
+
+JastAdd parser allows (optional) hava class names at the start of the production, which it uses to make a %typeof option. This just decalares java types for grammar symbols. 
+
+This might be the file to gather the clocks of a typestate? - unlikely, clocks would need to be a collection on the parent node of a TypestateDecl (or similar) where each method contributes it's clockname to a set.
+
+This file will almost definitely need changed to match the new declared typestate. Might want to work on that first?
+
+This more specfically captures the things we'll see in a protocol file and how to parse it, so it includes more info on seeing LPAREN, RPAREN etc
+
+* TypeDecl type_declaration = just returns the typestate_declaration
+* TypestateDecl typestate_declaration
+    - First option is the declaration of a typestate from the top of a file, so has the name of the typestate, {, then the inital typestate, then a list of other typestates
+        - Creates the init typestate of this declaration
+        -  Sets the start and end from the identifier (not quite sure what this is)
+        - returns this TypestateDecl with the inital state
+    - Second option doesn't have a list of typesates
+        - does the same as above but creates but creates an empty list for the typestates
+* List state_name_list
+    - Gets a list of all the state names
+* State state_name 
+    - Using the identifier and typesate it sets up a State with the mapping between them 
+* List typestate_list
+    - Returns a list of the methods that can be called for a typestate
+* Typestate typesate
+    - For a typestate it returns the typestate method list
+    - Or EndTypestate for {} or end
+    - Or the label
+* TypestateMethod method
+    - returns a new TypestateMethod with it's ttype (return type), name, the parameter types, and the typestate it goes to
+    - Or If it has no params, it makes a new TTypeArgs 
+    - Or it does the same as the first option but it matches when it has a t_switch instead of just a normal typestate
+    - Same as above but with no params
+* TypestateSwitch t_switch 
+    - Returns the TypestateSwitch
+* List switch_case_list
+    - Adds all the switch cases to a list
+* TypestateSwithCase switch_case 
+    - Returns a new TypestateSwitchCase with the id and stuff
+* TypestateLabel t_label
+    - Returns a new Typestate label
+* TType ttype
+    - Can be object with a typestate
+    - Normal type 
+    - or void
+* List ttype_list
+    - Returns a new list of all the ttypes, so used for the parameter list
+
+*scanner*
+### Keywords.flex
+- Returns symbols for keywords, I suspect we will need to add delay to this
+
+## Java
+
+*mungo*
+### Boolean.java
+- Makes Boolean an enum
+
+### Typestate.java
+- Provides an interface for the Typestate which is just a string value
+
+Will likely need to place a class here for delay. Not quite sure how we would make a new java expression but we'll figure it out. 
+
+*org*
+### TypestateChecker.java
+The file that has the file usages and how to use mungo.jar
+
+Think that's the main files covered for Mungo - good work
+
+frontEnd folder which contains the aspects is the main place work will be carried out.
+
+So next steps
+1. Get a better idea where the typestate checking occurs
+2. Update the typestate grammar to include clock constraints
+3. See where the inferred typestates are
+4. Update the inferrences algorthim and then find the subtyping reltion
+5. Update subtyping relation 
+
+There is a syntax folder which contains the (declared) typestate syntax and java syntax, this will need to be updated.
+
+The getting started guide has a way of updating the syntax, which we will need to use for the new delay statement. 
+
+# Notes on java AST in extendJ
+- Program is the top node and contains a list of CompilationUnits
+- CompUnit has a list of ImportDecl and TypeDecl
+- TypeDecl is an abstract class that has Modifiers, ID, and a list of BodyDecls
+    - TypeDecl can be class, interface, enum etc
+    - bodydecl can be methods, fields etc
+- Statements
+    - *This is what delay will be*
+        *Have likely said delay expression by mistake in a lot of places*
+    - Has blocks, ifs, fors, etc
+- Expressions
+    - Has Assign, EQ, NE etc
+- Accesses
+    - i.e. 'a.b.c()'
+    - It's the chaning we do to access variables and methods, or arrays etc
+    - Contains 'Dots' which have a left child and right child i.e. 'a.c()' has Dot with children 'VarAccess "a"' and "MethodAccess "c"'
+- Error Collection
+    - problem() - collection of warnings & errors
+    - Everything that can generate an error uses a contributes statement
+- can use type() on any Expr to find its type
+- subtyping rules are encoded with attrs *using double disptach pattern)
+    - not our type of subtyping (I don't think)
+
+# Notes on specific aspects I need to figure out
+
+1. Typestate inferrence
+To find out where this occurs I will run one of the examples and place an error in it to see where the error is written out from.
+
+With an incorrect typestate we get an error like "Typestate mismatch. Found.... Expected:..."
+
+This error is found in *TypestateTypingEnvironment.jrag*
+- This function is on 'TypestateVar' node
+- uses the 'checkTypestate(GraphNode t, String errorMessage)' function
+    - errorMessage is not used here
+    - Is called by typestateCheck()
+        - Which is called by ASTNode.collectTypestate()
+            - Which is called by Program.collect()
+    - t is the declared typestate we are checking
+        - we get this typestate by looking up the TSType of node we are working on (seems to be a Declarator)
+    - Uncommented the debugging statement they have for the typestate checking, is helpful as it shows us the paths that are getting checked by includes
+    *Will be able to use this later*
+    - Adding print statements for the specific typestateCheck, it's definitely Declarator
+    - Need to work out how 'typestate' comes about, as this is the inferred typestate that is checked against
+    - So I think typestate comes from the GetGraph file which I will now search
+
+
+- A Declarator node is an abstract node for variables and fields. Think it's used for Stack s = new Stack() but not 100% sure yet
+
+*use JavaDumpTree* on code if we want to know what nodes are what. Can see that ClassDecl is just the class def we are used to. So it looks like a VariableDeclarator has 'ClassInstanceExpr' under it that seems to be 'new'.
+
+*ClassInstanceExpr* is mentioned a lot and as I'm aware it is used when objects are created which would follow the rules we know from Mungo. 
+- Lots of mention in the GetGraph file
+- Used a lot in Declarator.getGraph(Set<TypestateVar> env)
+- Used again in AssignExpr.getGraph(env)
+    - Seems to follow the asign expression stuff from mungo
+
+getGraph is likely the typestate inferrence stuff, now I just need to work out how it works
+
+## More notes on Declaracor.getGraph(Set<TypestateVar> env)
+- boolean isTypestate = getTypeAccess : Access.lookupTSType.isTypestateClassDeclType()
+    - not quite sure why it is titled isTypestate instead of hasTypestate (as this would maybe make more sense) unless the class itself is a typestate? Having a look at when else we find this typestate, this is definitely the declared typestate
+    - lookupTSType gets the TSType for an Access
+- If this class has a typestate
+    - then we check if it is declaring expression (ClassInstanceExpr) and that the init typestate is null
+    - if so creates a new InitNode and adds the current typestate.current to the next and adds an init node to the start of it
+    - This might be the start of the inferrence typestate stuff
+- If it doesn't then 
+    - It checks if the init node (of the typestate I think) is a ClassInstanceExpr
+    - If it is then it gets the first Arg and checks if that is a ClassInstanceExpr too
+    - then does the same as the above method but for the arg?
+
+- From the print statement that I added, this getGraph is called a single time and adds the current typestate
+- From the new print statements that have been added, this get graph for the declarator is called at the end, as it's typestate has already been filled and it adds an init node to the start.
+    - So just need to work out when this typestate is updated, which I'm going to guess is in MethodDecl
+    - Don't think it is MethodDecl, it is likely MethodAccess instead
+    - MethodAccess is the method call and print statements have been added at the part where the typestate call is added
+    - MethodAccess has a part where it edits the typestate of the parameters by making new nodes so should be able to do that for delay 
+
+2. Going to start trying to update the inferrence system
+- New, Call, and Delay are the only major rule changes from the previous system. 
+
+start by adding delay to the system or we can just have it as a method call?
+- Having issues adding delay as an expression so will leave this for now. 
+
+Will move onto updating the existing grammar with time constraints and seeing how that works
+
+3. Updating the existing typestate grammar for time constraints, should only be for the declared typestates
+- Only update is on the signature with an optional time constraint
+- Will need to have a think what type the TimeConstraint would take
+- Have basic parsing, having an issue with optional values so will need to figure out how to convert those
+    - So issue with optional parts of a production rule 
+    - The literals 
+
+All previously mentioned issues have now been sorted out and on the surface it all seems to work!
+
+Now going to go through the theory and see if everything has been added correctly 
+
+### Syntax
+- Syntax has been added correctly and is parsed as well
+- Inferred and declared typestate has not been split up in the implementation to avoid unnessary renaming of existing code that wouldn't lead to any major improvement
+- Time is represented by doubles to allow real values
+
+### Helper functions
+- Init has been declared (in createTypestate)
+- Clocks created via attributes
+- Join correctly created via exiting Mungo code
+- removeDelays doesn't seem to be needed
+    - Therefore noOfDelays and convert haven't be made either
+    - More research into why this is the case
+
+### Subtyping relation (I <: S)
+- Exists in GraphNode through the includes functions
+- Terminate has been updated so it includes the clocks 
+- Methods that don't have timing constraints don't check the clock constraints
+- Recursion works for previous work and updated type theory 
+- Works for switch statement contraints
+    - And individual resets
+- Branches work
+- Time progression works as expected 
+- All works as expected
+
+## Subtyping (I <: I')
+- Don't think this is ever used in the system but will have a check
+- It is never used
+
+## Subtyping (S <: S')
+- This is used so will need updated
+- Added so the current system works, will need to have a think if it should be updated to care about timing constraints and what this would look like in the theory
+- The subtyping presented in other research is a bit more complex
+- So can have a very simple system where for the method to match it must have the same resetPred and clockConstraints?
+    - Not the most important thing to work on as it hasn't really been covered in my paper so I don't think I'll focus on it
+    - Will just add that constraints and resets need to be the same, future work can be to explore how these subtypes work
+    - Completed, not perfect equality but it shall do until future work
+
+## Inference rules are good
+- New has been added
+- Delay has been added too
+- Need to have a better look at if 'Call' works as expected
+    - This indeed works as expected 
+
+- Error messages have been improved such that if it's a time error it will only send that out. 
+- Should also make my example more realistic and actually work.
+    - Currently it doesn't actualy achieve anything realisitc.
+    - Now actually works as a class however it doesn't do anything particularly cool or anything
+- Can then have a look to moving on towards StMungo.
+
+## StMungo
+The grammar is written in ANTLR, so can look at notes for that but shouldn't be too difficult to do
+
+Scribble only deals with local protocols so don't need to worry about some of the more confusing stuff.
+
+local send and receive is what I care about 
+
+Have an example in my notes about a ordering book example that may be a good example of StMungo? Can leave it for now however.
+
+The SMTP example has been updated with some time constraints however it isn't awesome and more highlights the issue with the system (the fact it is synchronous) so therefore in order to make sure it is wait-free we need long times to wait. Good for evaluation but rather annoying overall. Can discuss this with Ornela tomorrow, it has been completed but it isn't ideal given my implementation. StMungo is completed however which is great.
+
+All the work from Project Definitions has now been added to the paper template. Today will be spent fixing up this template and making a rough plan for what I will be talking about in the paper. The planning should only take one day max and be used to reduce the amount of stress at starting the proper work tomorrow but luckily most of the difficult to write stuff (the typing rules) are already up and it should be a good paper to write overall.
 
