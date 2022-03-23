@@ -1608,7 +1608,64 @@ local send and receive is what I care about
 
 Have an example in my notes about a ordering book example that may be a good example of StMungo? Can leave it for now however.
 
+## Dissertation Notes
+
 The SMTP example has been updated with some time constraints however it isn't awesome and more highlights the issue with the system (the fact it is synchronous) so therefore in order to make sure it is wait-free we need long times to wait. Good for evaluation but rather annoying overall. Can discuss this with Ornela tomorrow, it has been completed but it isn't ideal given my implementation. StMungo is completed however which is great.
 
 All the work from Project Definitions has now been added to the paper template. Today will be spent fixing up this template and making a rough plan for what I will be talking about in the paper. The planning should only take one day max and be used to reduce the amount of stress at starting the proper work tomorrow but luckily most of the difficult to write stuff (the typing rules) are already up and it should be a good paper to write overall.
 
+Need to have a look later on at which rules can stay and which can go, a lot of the rules follow on from Mungo, so the more stuff I write, the more some of these can go into the appendix 
+
+Rough section plan
+
+Can have a quick look at the sections that are present in Mungo, Papaya, the suggested sections from the example and then give some more detail about what to include
+
+# Mungo paper
+## Abstract
+Self explanatory, do this part at the end
+
+## Introduction
+Gives an overview of the paper, what it contains and some breif intro to some background work.
+
+## Mungo section
+Could definitely be added for my work and can be used to discuss and then show the final implementation of Mungo and how the time constraints work, can also give some slight background of JastAdd works
+
+## StMungo
+A small section but can discuss how it has been updated to convert time constraints written in Scribble to the Mungo protocol files. Can give an example of a local protocol tranlated into it's time mungo protocol. 
+
+## Case study: typechecking SMTP 
+    could be done but it would more highlight work that has already been accomplished and wouldn't discuss too much as the time stuff isn't perfect but good for evaluation
+
+## Calculus 
+    Big section, should be a decent one to write, can look to follow how the Mungo paper writes this
+
+### Typestate inference
+Again a fairly big chapter that shows how the new inferrence rules work, may need to rewrite it slightly so it doesn't include a huge amount of production rules, but a few here and there would be helpful. 
+
+### Properties
+Discuss the proofs that have been done and what this system can entail, including a more up to date collerie definition 
+
+## Related work section
+Easy just put the stuff I did for ymy project proposal here
+
+## Conclusion and future work
+Again, not a difficult one to do and should be nice to write up
+
+# Papaya Paper
+Will only note the main differences that are found here
+
+- Provides an overview example (this may be a nice way to introduce the running example that is used throughout). However the Mungo section in the Mungo paper does this already so maybe best to stick to it that way.
+- Similar to Mungo
+
+# Example paper from LaTeX template
+- Decent outline but likely only best for papers that follow that outline, still best to follow the Mungo example
+
+Current Mungo section is good but will likely split it up. The first part is good and can show off some of the cool parts of the paper, tho a slightly more complex example might be better. The implementation with JastAdd is a good idea but much better after the calculus has been presented, as it will allow more lower level details to be discussed. 
+
+Fisrt 5 pages are pretty good, some of the code blocks can certaintly be made smaller but happy with current progress given it has only been a few days. Can look to update the SMTP client a bit more and give a (small) section on it given it certaintly isn't perfect, however it can be useful for the future work and conclusion section of the paper which will discuss the issue with "tsDelay" and "wait-free" which are baked into this project. The DATA BLOCK timeout is left out as it is unclear where this would be placed in and I don't think there is any advantage to adding this to the SMTP server impementation. This will mainly be used as part of the evaluation stage and future work, with possible fixes.
+
+May be wise to make the example have a few more complex things in it to show how a user could use it. Main example I can see would be individual methods in separate classes that can model time that a class can choose to use or not but not too many or it would cause issues. This can be seen as an extension to the existing example and help was part of the eval.
+
+Might need to include a subtyping reltion for the declared subtypes? Can stick this in the appendix and maybe mention that Mungo checks that subclasses have subtype typestates?
+
+May change the wording of (v,S) to "tuple" instead of pair?
