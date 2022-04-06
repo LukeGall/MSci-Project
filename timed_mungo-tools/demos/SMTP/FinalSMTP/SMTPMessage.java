@@ -1,4 +1,4 @@
-package demos.SMTP.FinalSMTP;
+// package demos.SMTP.FinalSMTP;
 
 public class SMTPMessage {
   private String command;

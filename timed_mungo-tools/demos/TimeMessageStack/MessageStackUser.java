@@ -10,14 +10,14 @@ class MessageStackUser{
         MyStack stack = new MyStack();
         MessageFiller.fillMessages(stack);
         Message messagePointer = new Message("");
+
         MessageStack ms = new MessageStack(stack, messagePointer);
         MessageStackUser msu = new MessageStackUser();
         loop : do{
             switch(ms.checkForMessage()){
                 case RECEIVED:
                     Message m = ms.getMessage();
-                    tsDelay(2);
-                    System.out.println(m.toString());
+                    tsDelay(20);
                     String response = msu.getResponse();
                     ms.answerMessage(response);
                     continue loop;

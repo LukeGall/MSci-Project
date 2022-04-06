@@ -1669,3 +1669,76 @@ May be wise to make the example have a few more complex things in it to show how
 Might need to include a subtyping reltion for the declared subtypes? Can stick this in the appendix and maybe mention that Mungo checks that subclasses have subtype typestates?
 
 May change the wording of (v,S) to "tuple" instead of pair?
+
+Made clear the difference between Timed Mungo and Mungo to make it clear to the reader. 
+
+Notes for demonstration video
+- Their video is around 10 mins long
+- Shows the client local protocol
+- Runs the StMungo on client protocol
+- Shows the translated StMungo protocol
+- Shows the CMain and then the CRole file
+- Shows a lot of the main files for the SMTP stuff but this isn't something I should worry too much about
+- Uses Mungo on the jar, then compiles and runs it
+
+- Start with the message stack example
+- Show off the protocol and give a small description about what this example shows off
+- After showing the example, give the MessageStack class and then show the MessageStackUser example. Highlighting the tsDelay option. We can then run Mungo and show that we have no time error. We can then Call getResponse an extra time to show that the time constraint is not correct. 
+- Can then compile and run the program
+
+- After this example we can show off StMungo tool using the SMTP example
+- Show off the local scribble protocol for both client and server, can then highlight the matching time constraints
+- Will then use the StMungo tool to translate the protocol into protocol, can then show off the translated example where delay is require and run Mungo again. 
+
+Demo complete!
+
+Feedback from first draft
+- Careful with it's, change to its where approriate
+
+Things to change to make paper more distinct from Mungo
+- Change in section titles - done
+- Name of rules - done
+- Font style (I assume for rules i.e. kw macro) - done
+- Formatting of figures - done
+    - Change how the rules are presented, again papaya is a good exmaple, even colour formating can help this
+    - Syntax can't change too much as the syntax is used in a lot of areas of code and is to match Java like syntax. However the names and letters and ordering can be changed to look at bit different. 
+    - Runtime syntax can be put in the appendix as it is required for the proofs but I shouldn't need to worry about having it in the first section, I don't think. Will help make that section sound more like mine too. 
+    - join function is a little bit harder to make look different but have done my best there
+        - Can change the name to a symbol - no would make it harder to read
+
+- Ordering of sections - done
+    - Abstract
+    - Introduction
+    - Background (i.e. related work but focus on main papers i.
+    e. Mungo, TMPST
+        - Subsection for time, typestates, session types etc
+    - Formalisiation 
+        - Calclus (main thing that needs rewritten)
+        - Inferrence and why it is important (might be able to squeeze in an example)
+        - What we do after getting these inferred types - subtyping
+    - Tools / Implementation
+        - Timed Mungo
+        - Timed StMungo
+        - Would be great to get JastAdd here
+    - Evaluation
+        - SMTP case study
+        - Properties of system
+    - Conclusion
+
+- Describing the formalism i.e. calculus etc
+    - Cut parts out that don't feel required for my paper 
+    - That big part about method inferrence 
+- Mainly for core calculus for Mungo but also appendices
+    - How to rewrite appendices will come from above changes
+    - Can try to change the font, make it almost look like the one from papaya
+- Will need to change how runtime syntax is presented even if just in appendix,
+- For appendix, need to update the r's and o's
+
+
+# TODO
+- Update Appendix - done
+    - Can maybe leave the Lemma proofs and just refer to the Mungo paper? Raise with Ornela - done for now but mention it in my update message
+    - Think about how to change Subject proofs - done to the best of my ability, text has already been rewritten
+- Change It's to its - done
+- Make related work more a background section - done
+- Adding parts at the start of sections which help it flow - done

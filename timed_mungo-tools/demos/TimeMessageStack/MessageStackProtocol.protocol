@@ -1,6 +1,7 @@
 typestate MessageStackProtocol {
     Stack = {
-        Check checkForMessage(): <RECEIVED: [xm < 10, {xm}] Present, EMPTY: [xm<10] EndState>
+        Check checkForMessage(): <RECEIVED: [xm < 10, {xm}] Present, 
+                                  EMPTY: [xm<10] EndState>
     }
     Received = {
         [xm < 10, {xm}] void answerMessage(String): Stack,
