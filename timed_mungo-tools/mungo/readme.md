@@ -1,8 +1,10 @@
-# Mungo
+# Timed Mungo 
 
 This is a front-end tool used to statically check the order of method calls. It is implemented using the [JastAdd](http://jastadd.org/web/) framework and [ExtendJ](https://extendj.org/index.html) compiler.
 
-A typestate, or protocol file( .protocol) is defined and associated to a class, through an annotation. A protocol definition is described as a sequence of method calls, the order of which determines the validity of the protocol. The Mungo tool checks that the object instantiating the class performs method calls by following its declared typestate. If the typestate is violated, Mungo reports the errors.
+A typestate, or protocol file( .protocol) is defined and associated to a class, through an annotation. A protocol definition is described as a sequence of method calls, the order of which determines the validity of the protocol. The Timed Mungo tool checks that the object instantiating the class performs method calls by following its declared typestate. If the typestate is violated, Timed Mungo reports the errors. 
+
+Users can attach time constraints to method calls in typestate definitions. These time constraints are related to "clocks" which are attached to individual objects. Users can then progress time using "tsDelay(t)" which is used to progress time for the typing system. Timed Mungo will then ensure that method calls only occur at the prescribed timing constraints, if not a semantic error will be reported.
 
 ## Cloning this Project
 

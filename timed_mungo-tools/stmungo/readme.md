@@ -1,6 +1,6 @@
 # README #
 
-StMungo is a tool that translates Scribble(http://www.scribble.org) local protocols into typestate specifications in Mungo(http://www.dcs.gla.ac.uk/research/mungo/). 
+Timed StMungo is a tool that translates Scribble(http://www.scribble.org) local protocols into typestate specifications in Mungo(http://www.dcs.gla.ac.uk/research/mungo/). The new Timed StMungo tool can now translate timed local Scribble protocols.
 It also generates a Java API containing methods corresponding to the messages exchanged with all other participants in the multiparty protocol. 
 
 
